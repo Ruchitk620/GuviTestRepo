@@ -101,3 +101,8 @@ INSERT INTO artist_skill VALUES (1,1);
 INSERT INTO artist_movie_role VALUES (1,1,'Hero');
 
 
+#To get the one movie_title with multiple genre_name 
+SELECT m.title, g.genre_name
+FROM movies m
+JOIN movie_genre mg ON m.movie_id = mg.movie_id
+JOIN genres g ON mg.genre_id = g.genre_id;
