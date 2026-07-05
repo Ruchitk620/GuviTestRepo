@@ -17,7 +17,7 @@ def test_successful_login(setup):
     login = LoginPage(driver)
 
     try:
-        login.login("ruchitk.ganesh@gmail.com", "Csrockers@1")
+        login.login("YOUR_EMAIL", "YOUR_PASSWORD")
 
         WebDriverWait(driver, 15).until(
             EC.url_contains("dashboard")
@@ -69,8 +69,8 @@ def test_logout(setup):
 
     # Login with valid credentials
     login.login(
-        "ruchitk.ganesh@gmail.com",
-        "Csrockers@1"
+        "YOUR_EMAIL",
+        "YOUR_PASSWORD"
     )
 
     # Logout
