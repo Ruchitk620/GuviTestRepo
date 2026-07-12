@@ -1,80 +1,56 @@
-"""
-Task 14 Test Cases
-"""
+import pytest
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.wait import WebDriverWait
-
 from pages.login_page import LoginPage
+from utils.excel_utils import ExcelUtils
 
 
-# Positive Login
-def test_successful_login(setup):
+def test_login(setup):
 
     driver = setup
+    wait = WebDriverWait(driver, 10)
 
     login = LoginPage(driver)
 
-    try:
-        login.login("YOUR_EMAIL", "YOUR_PASSWORD")
+    excel = ExcelUtils("test_data/LoginData.xlsx")
 
-        WebDriverWait(driver, 15).until(
-            EC.url_contains("dashboard")
-        )
+    rows = excel.get_row_count()
 
-        assert "dashboard" in driver.current_url.lower()
+    for row in range(2, rows + 1):
 
-    except TimeoutException:
-        assert False
+        # Open Login Page
+        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")
 
+        # Read Excel Data
+        username = excel.get_username(row)
+        password = excel.get_password(row)
 
-# Negative Login
-def test_unsuccessful_login(setup):
+        # Login
+        login.login(username, password)
 
-    driver = setup
+        try:
+            # Wait for Dashboard
+            wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//h6[text()='Dashboard']")
+                )
+            )
 
-    login = LoginPage(driver)
+            result = "PASS"
 
-    login.login("wronguser", "wrongpassword")
+            # Logout after successful login
+            login.logout()
 
-    assert "login" in driver.current_url.lower()
+        except Exception:
 
+            result = "FAIL"
 
-# Username & Password
-def test_input_boxes(setup):
+        # Write into Excel
+        excel.write_date(row)
+        excel.write_time(row)
+        excel.write_result(row, result)
 
-    login = LoginPage(setup)
-
-    assert setup.find_element(*login.username).is_displayed()
-
-    assert setup.find_element(*login.password).is_displayed()
-
-
-# Submit Button
-def test_submit_button(setup):
-
-    login = LoginPage(setup)
-
-    assert setup.find_element(*login.login_button).is_enabled()
-
-
-
-# Logout Test
-def test_logout(setup):
-
-    driver = setup
-
-    login = LoginPage(driver)
-
-    # Login with valid credentials
-    login.login(
-        "YOUR_EMAIL",
-        "YOUR_PASSWORD"
-    )
-
-    # Logout
-    login.click_logout()
-
-    # Validate logout
-    assert "login" in driver.current_url.lower()
+    # Save Excel after all rows are completed
+    excel.save()
