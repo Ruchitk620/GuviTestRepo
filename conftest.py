@@ -6,9 +6,10 @@ from selenium import webdriver
 def setup():
 
     driver = webdriver.Chrome()
+
     driver.maximize_window()
 
-    driver.get("https://v2.zenclass.in/login")
+    driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")
 
     yield driver
 
