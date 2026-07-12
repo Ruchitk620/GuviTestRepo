@@ -1,11 +1,6 @@
-"""
-Page Object Model for Zen Portal Login Page
-"""
-import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 
 class LoginPage:
 
@@ -13,42 +8,20 @@ class LoginPage:
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)
 
-        # Locators
-        self.username = (By.ID, ":r1:")
-        self.password = (By.ID, ":r2:")
-        self.login_button = (By.XPATH, "//button[text()='Sign in']")
-
-        # Close popup after login
-        self.close_popup = (
-            By.XPATH,
-            "//button[@class='custom-close-button']"
-        )
-
-        # Profile icon
-        self.profile_icon = (
-            By.ID,
-            "profile-click-icon"
-        )
-
-        # Logout button
-        self.logout_button = (
-            By.XPATH,
-            "//div[@class='user-avatar-menu' and text()='Log out']"
-        )
-
+    # Your existing methods
     def enter_username(self, username):
         self.wait.until(
-            EC.visibility_of_element_located(self.username)
+            EC.visibility_of_element_located((By.NAME, "username"))
         ).send_keys(username)
 
     def enter_password(self, password):
         self.wait.until(
-            EC.visibility_of_element_located(self.password)
+            EC.visibility_of_element_located((By.NAME, "password"))
         ).send_keys(password)
 
     def click_login(self):
         self.wait.until(
-            EC.element_to_be_clickable(self.login_button)
+            EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']"))
         ).click()
 
     def login(self, username, password):
@@ -56,29 +29,16 @@ class LoginPage:
         self.enter_password(password)
         self.click_login()
 
-    def close_notification(self):
+    # ADD THIS METHOD
+    def logout(self):
         self.wait.until(
-            EC.element_to_be_clickable(self.close_popup)
+            EC.element_to_be_clickable(
+                (By.XPATH, "//span[@class='oxd-userdropdown-tab']")
+            )
         ).click()
 
-    def click_logout(self):
-        # Close popup
         self.wait.until(
-            EC.element_to_be_clickable(self.close_popup)
+            EC.element_to_be_clickable(
+                (By.XPATH, "//a[text()='Logout']")
+            )
         ).click()
-
-        time.sleep(2)
-
-        # Open profile menu
-        self.wait.until(
-            EC.element_to_be_clickable(self.profile_icon)
-        ).click()
-
-        time.sleep(2)
-
-        # Click logout
-        self.wait.until(
-            EC.element_to_be_clickable(self.logout_button)
-        ).click()
-
-        time.sleep(5)
